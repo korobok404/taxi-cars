@@ -4,18 +4,20 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/korobok404/taxi-cars/data"
 	"github.com/korobok404/taxi-cars/entity"
+	"github.com/korobok404/taxi-cars/service"
 )
 
-// getCars return all cars
+// GetCars return all cars
 func GetCars(context *gin.Context) {
 	context.IndentedJSON(http.StatusOK, data.GetCars())
 }
 
-// addCar add new car
+// AddCar add new car
 func AddCar(context *gin.Context) {
 	car := entity.NewCar()
 
@@ -27,7 +29,7 @@ func AddCar(context *gin.Context) {
 	context.IndentedJSON(http.StatusCreated, car)
 }
 
-// getCarById return car by unique id
+// GetCarById return car by unique id
 func GetCarById(context *gin.Context) {
 	id := context.Param("id")
 
@@ -39,7 +41,7 @@ func GetCarById(context *gin.Context) {
 	context.IndentedJSON(http.StatusOK, car)
 }
 
-// updateCarById change existing car
+// UpdateCarById change existing car
 func UpdateCarById(context *gin.Context) {
 	id := context.Param("id")
 
@@ -53,7 +55,7 @@ func UpdateCarById(context *gin.Context) {
 	context.IndentedJSON(http.StatusOK, gin.H{"message": "car was updated"})
 }
 
-// deleteCarById delete existing car
+// DeleteCarById delete existing car
 func DeleteCarById(context *gin.Context) {
 	id := context.Param("id")
 
@@ -62,4 +64,19 @@ func DeleteCarById(context *gin.Context) {
 		return
 	}
 	context.IndentedJSON(http.StatusOK, gin.H{"message": "Car was deleted"})
+}
+
+// GetNearestCars return nearest cars that are ready to accept the order
+func GetNearestCars(context *gin.Context) {
+	clientX, errX := strconv.Atoi(context.Query("x"))
+
+	clientY, errY := strconv.Atoi(context.Query("y"))
+	if errX != nil || errY != nil {
+		//TODO: Add validation
+		context.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Coordinaate error"})
+		return
+	}
+
+	cars := service.GetNearestCars(clientX, clientY)
+	context.IndentedJSON(http.StatusOK, cars)
 }

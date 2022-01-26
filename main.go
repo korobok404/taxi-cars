@@ -21,6 +21,7 @@ func main() {
 	router.GET("/cars/:id", controller.GetCarById)
 	router.PUT("/cars/:id", controller.UpdateCarById)
 	router.DELETE("/cars/:id", controller.DeleteCarById)
+	router.GET("/cars/nearest", controller.GetNearestCars)
 
 	// Server settings
 	srv := &http.Server{

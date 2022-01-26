@@ -10,8 +10,42 @@ import (
 
 // List of test cars
 var cars map[string]*entity.Car = map[string]*entity.Car{
-	"123": {"123", "H123", "Toyota", "Black", 2020, true, time.Now(), time.Now()},
-	"234": {"234", "H456", "BMW", "Grey", 2019, false, time.Now(), time.Now()},
+	"123": {
+		Id:        "123",
+		RegPlate:  "H123",
+		Brand:     "Toyota",
+		Color:     "Black",
+		Year:      2020,
+		IsReady:   true,
+		PosX:      3,
+		PosY:      5,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	},
+	"234": {
+		Id:        "234",
+		RegPlate:  "H456",
+		Brand:     "BMW",
+		Color:     "Grey",
+		Year:      2019,
+		IsReady:   true,
+		PosX:      7,
+		PosY:      2,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	},
+	"567": {
+		Id:        "567",
+		RegPlate:  "H732",
+		Brand:     "Kia",
+		Color:     "Blue",
+		Year:      2018,
+		IsReady:   true,
+		PosX:      4,
+		PosY:      8,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	},
 }
 
 // getCars return all cars
