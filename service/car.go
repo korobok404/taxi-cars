@@ -9,9 +9,9 @@ func GetNearestCars(x, y int) map[string]*entity.Car {
 	cars := data.GetCars()
 
 	resultCars := make(map[string]*entity.Car)
-	for id, car := range cars {
+	for _, car := range cars {
 		if car.IsReady {
-			resultCars[id] = car
+			resultCars[car.Id] = car
 		}
 	}
 	return resultCars
