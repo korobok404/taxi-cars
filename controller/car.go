@@ -7,14 +7,15 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/korobok404/taxi-cars/data"
 	"github.com/korobok404/taxi-cars/entity"
+	"github.com/korobok404/taxi-cars/repository"
 	"github.com/korobok404/taxi-cars/service"
+	"gorm.io/gorm"
 )
 
 // GetCars return all cars
 func GetCars(context *gin.Context) {
-	context.IndentedJSON(http.StatusOK, data.GetCars())
+	context.IndentedJSON(http.StatusOK, repository.GetCars(context.MustGet("db").(*gorm.DB)))
 }
 
 // AddCar add new car
@@ -25,7 +26,10 @@ func AddCar(context *gin.Context) {
 		log.Fatal(err)
 	}
 
-	data.AddCar(car)
+	if err := repository.AddCar(car, context.MustGet("db").(*gorm.DB)); err != nil {
+		context.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
 	context.IndentedJSON(http.StatusCreated, car)
 }
 
@@ -33,7 +37,7 @@ func AddCar(context *gin.Context) {
 func GetCarById(context *gin.Context) {
 	id := context.Param("id")
 
-	car, err := data.GetCarById(id)
+	car, err := repository.GetCarById(id, context.MustGet("db").(*gorm.DB))
 	if err != nil {
 		context.IndentedJSON(http.StatusNotFound, gin.H{"message": err.Error()})
 		return
@@ -48,7 +52,7 @@ func UpdateCarById(context *gin.Context) {
 	car := entity.NewCar()
 	json.NewDecoder(context.Request.Body).Decode(car)
 
-	if err := data.UpdateCarById(id, car); err != nil {
+	if err := repository.UpdateCarById(id, car, context.MustGet("db").(*gorm.DB)); err != nil {
 		context.IndentedJSON(http.StatusNotFound, gin.H{"message": err.Error()})
 		return
 	}
@@ -59,7 +63,7 @@ func UpdateCarById(context *gin.Context) {
 func DeleteCarById(context *gin.Context) {
 	id := context.Param("id")
 
-	if err := data.DeleteCarById(id); err != nil {
+	if err := repository.DeleteCarById(id, context.MustGet("db").(*gorm.DB)); err != nil {
 		context.IndentedJSON(http.StatusNotFound, gin.H{"message": err.Error()})
 		return
 	}
@@ -72,11 +76,11 @@ func GetNearestCars(context *gin.Context) {
 
 	clientY, errY := strconv.Atoi(context.Query("y"))
 	if errX != nil || errY != nil {
-		//TODO: Add validation
+		//TODO: Add middleware with validation
 		context.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Coordinaate error"})
 		return
 	}
 
-	cars := service.GetNearestCars(clientX, clientY)
+	cars := service.GetNearestCars(clientX, clientY, context)
 	context.IndentedJSON(http.StatusOK, cars)
 }

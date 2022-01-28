@@ -12,10 +12,20 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/korobok404/taxi-cars/controller"
+	"github.com/korobok404/taxi-cars/entity"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 func main() {
+	db := initDB()
+
 	router := gin.Default()
+	router.Use(func(c *gin.Context) {
+		c.Set("db", db)
+		c.Next()
+	})
+
 	router.GET("/cars", controller.GetCars)
 	router.POST("/cars", controller.AddCar)
 	router.GET("/cars/:id", controller.GetCarById)
@@ -56,4 +66,30 @@ func main() {
 		log.Fatal("Error shutting down:", err)
 	}
 
+}
+
+func initDB() *gorm.DB {
+
+	db, err := gorm.Open(sqlite.Open("taxi.db"), &gorm.Config{})
+	if err != nil {
+		panic("failed to connect database")
+	}
+
+	// Migrate models
+	db.AutoMigrate(&entity.Car{})
+
+	// Create test car
+	// db.Create(&entity.Car{
+	// 	Id:        "555",
+	// 	RegPlate:  "H321",
+	// 	Brand:     "Toyota",
+	// 	Color:     "Black",
+	// 	Year:      2020,
+	// 	IsReady:   true,
+	// 	PosX:      3,
+	// 	PosY:      5,
+	// 	CreatedAt: time.Now(),
+	// 	UpdatedAt: time.Now(),
+	// })
+	return db
 }

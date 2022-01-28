@@ -4,15 +4,17 @@ import (
 	"runtime"
 	"sync"
 
-	"github.com/korobok404/taxi-cars/data"
+	"github.com/gin-gonic/gin"
 	"github.com/korobok404/taxi-cars/entity"
+	"github.com/korobok404/taxi-cars/repository"
+	"gorm.io/gorm"
 )
 
 // Search distance
 const distance = 5
 
-func GetNearestCars(x, y int) map[string]*entity.Car {
-	allCars := data.GetCars()
+func GetNearestCars(x, y int, context *gin.Context) map[string]*entity.Car {
+	allCars := repository.GetCars(context.MustGet("db").(*gorm.DB))
 
 	// Result nearest cars
 	resultCars := make(map[string]*entity.Car)
@@ -25,6 +27,9 @@ func GetNearestCars(x, y int) map[string]*entity.Car {
 	n := len(allCars)
 	// Cars per goroutine
 	step := n / runtime.GOMAXPROCS(0)
+	if step == 0 {
+		step = n
+	}
 
 	var mu sync.Mutex
 	var goCount uint = 0
