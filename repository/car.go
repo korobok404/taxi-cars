@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// getCars return all cars
+// GetCars return all cars
 func GetCars(db *gorm.DB) []*entity.Car {
 	var cars []*entity.Car
 	db.Find(&cars)
@@ -15,7 +15,7 @@ func GetCars(db *gorm.DB) []*entity.Car {
 
 }
 
-// addCar add new car
+// AddCar add new car
 func AddCar(car *entity.Car, db *gorm.DB) error {
 	err := db.Create(car).Error
 	if err != nil {
@@ -24,7 +24,7 @@ func AddCar(car *entity.Car, db *gorm.DB) error {
 	return nil
 }
 
-// getCarById return car by unique id
+// GetCarById return car by unique id
 func GetCarById(id string, db *gorm.DB) (*entity.Car, error) {
 	car := entity.NewCar()
 	err := db.First(car, id).Error
@@ -34,7 +34,7 @@ func GetCarById(id string, db *gorm.DB) (*entity.Car, error) {
 	return car, nil
 }
 
-// updateCarById change existing car
+// UpdateCarById change existing car
 func UpdateCarById(id string, car *entity.Car, db *gorm.DB) error {
 	oldCar, err := GetCarById(id, db)
 	if err != nil {
@@ -61,7 +61,7 @@ func UpdateCarById(id string, car *entity.Car, db *gorm.DB) error {
 	return nil
 }
 
-// deleteCarById delete existing car
+// DeleteCarById delete existing car
 func DeleteCarById(id string, db *gorm.DB) error {
 	car, err := GetCarById(id, db)
 	if err != nil {

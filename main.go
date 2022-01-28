@@ -26,12 +26,15 @@ func main() {
 		c.Next()
 	})
 
-	router.GET("/cars", controller.GetCars)
-	router.POST("/cars", controller.AddCar)
-	router.GET("/cars/:id", controller.GetCarById)
-	router.PUT("/cars/:id", controller.UpdateCarById)
-	router.DELETE("/cars/:id", controller.DeleteCarById)
-	router.GET("/cars/nearest", controller.GetNearestCars)
+	v1 := router.Group("/v1")
+	{
+		v1.GET("/cars", controller.GetCars)
+		v1.POST("/cars", controller.AddCar)
+		v1.GET("/cars/:id", controller.GetCarById)
+		v1.PUT("/cars/:id", controller.UpdateCarById)
+		v1.DELETE("/cars/:id", controller.DeleteCarById)
+		v1.GET("/cars/nearest", controller.GetNearestCars)
+	}
 
 	// Server settings
 	srv := &http.Server{
