@@ -1,8 +1,6 @@
 package controller
 
 import (
-	"encoding/json"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -19,9 +17,9 @@ func GetCars(context *gin.Context) {
 // AddCar add new car
 func AddCar(context *gin.Context) {
 	car := entity.NewCar()
-
-	if err := json.NewDecoder(context.Request.Body).Decode(car); err != nil {
-		log.Fatal(err)
+	if err := context.ShouldBindJSON(car); err != nil {
+		context.IndentedJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
 	}
 
 	if err := repository.NewCarRepository(context).AddCar(car); err != nil {
@@ -48,7 +46,10 @@ func UpdateCarById(context *gin.Context) {
 	id := context.Param("id")
 
 	car := entity.NewCar()
-	json.NewDecoder(context.Request.Body).Decode(car)
+	if err := context.ShouldBindJSON(car); err != nil {
+		context.IndentedJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
 
 	if err := repository.NewCarRepository(context).UpdateCarById(id, car); err != nil {
 		context.IndentedJSON(http.StatusNotFound, gin.H{"message": err.Error()})
@@ -74,7 +75,6 @@ func GetNearestCars(context *gin.Context) {
 
 	clientY, errY := strconv.Atoi(context.Query("y"))
 	if errX != nil || errY != nil {
-		//TODO: Add middleware with validation
 		context.IndentedJSON(http.StatusBadRequest, gin.H{"message": "coordinates error"})
 		return
 	}

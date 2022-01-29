@@ -6,13 +6,13 @@ import (
 
 type Car struct {
 	Id        uint   `json:"id" gorm:"primarykey"`
-	RegPlate  string `json:"regPlate"`
-	Brand     string `json:"brand"`
-	Color     string `json:"color"`
-	Year      uint   `json:"year"`
+	RegPlate  string `json:"regPlate" binding:"required"`
+	Brand     string `json:"brand" binding:"required"`
+	Color     string `json:"color" binding:"required"`
+	Year      uint   `json:"year" binding:"required"`
 	IsReady   bool   `json:"isReady"`
-	PosX      int    `json:"posX"`
-	PosY      int    `json:"posY"`
+	PosX      int    `json:"posX" binding:"required"`
+	PosY      int    `json:"posY" binding:"required"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
