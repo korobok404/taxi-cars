@@ -9,13 +9,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/korobok404/taxi-cars/entity"
 	"github.com/korobok404/taxi-cars/repository"
-	"github.com/korobok404/taxi-cars/service"
-	"gorm.io/gorm"
 )
 
 // GetCars return all cars
 func GetCars(context *gin.Context) {
-	context.IndentedJSON(http.StatusOK, repository.GetCars(context.MustGet("db").(*gorm.DB)))
+	context.IndentedJSON(http.StatusOK, repository.NewCarRepository(context).GetCars())
 }
 
 // AddCar add new car
@@ -81,6 +79,6 @@ func GetNearestCars(context *gin.Context) {
 		return
 	}
 
-	cars := service.GetNearestCars(clientX, clientY, context)
+	cars := repository.NewCarRepository(context).GetNearestCars(clientX, clientY)
 	context.IndentedJSON(http.StatusOK, cars)
 }
