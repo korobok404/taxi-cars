@@ -55,15 +55,13 @@ func (carRepo *CarRepository) UpdateCarById(id string, car *entity.Car) error {
 	// When update with struct, GORM will only update non-zero fields
 	// https://gorm.io/docs/update.html#Updates-multiple-columns
 	err = carRepo.db.Model(oldCar).Updates(map[string]interface{}{
-		"reg_plate":  car.RegPlate,
-		"brand":      car.Brand,
-		"color":      car.Color,
-		"year":       car.Year,
-		"is_ready":   car.IsReady,
-		"pos_x":      car.PosX,
-		"pos_y":      car.PosY,
-		"created_at": car.CreatedAt,
-		"updated_at": car.UpdatedAt,
+		"reg_plate": car.RegPlate,
+		"brand":     car.Brand,
+		"color":     car.Color,
+		"year":      car.Year,
+		"is_ready":  car.IsReady,
+		"pos_x":     car.PosX,
+		"pos_y":     car.PosY,
 	}).Error
 
 	if err != nil {
@@ -83,7 +81,7 @@ func (carRepo *CarRepository) DeleteCarById(id string) error {
 }
 
 // GetNearestCars return nearest cars by client's coordinates
-func (carRepo *CarRepository) GetNearestCars(x, y int) map[string]*entity.Car {
+func (carRepo *CarRepository) GetNearestCars(x, y int) map[uint]*entity.Car {
 	// Search distance
 	const distance = 5
 
@@ -91,7 +89,7 @@ func (carRepo *CarRepository) GetNearestCars(x, y int) map[string]*entity.Car {
 	allCars := carRepo.GetCars()
 
 	// Result nearest cars
-	resultCars := make(map[string]*entity.Car)
+	resultCars := make(map[uint]*entity.Car)
 
 	// Search boundary coordinates
 	minX, maxX := x-distance, x+distance
