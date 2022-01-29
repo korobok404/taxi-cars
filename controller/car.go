@@ -26,7 +26,7 @@ func AddCar(context *gin.Context) {
 		log.Fatal(err)
 	}
 
-	if err := repository.AddCar(car, context.MustGet("db").(*gorm.DB)); err != nil {
+	if err := repository.NewCarRepository(context).AddCar(car); err != nil {
 		context.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
@@ -37,7 +37,7 @@ func AddCar(context *gin.Context) {
 func GetCarById(context *gin.Context) {
 	id := context.Param("id")
 
-	car, err := repository.GetCarById(id, context.MustGet("db").(*gorm.DB))
+	car, err := repository.NewCarRepository(context).GetCarById(id)
 	if err != nil {
 		context.IndentedJSON(http.StatusNotFound, gin.H{"message": err.Error()})
 		return
@@ -52,7 +52,7 @@ func UpdateCarById(context *gin.Context) {
 	car := entity.NewCar()
 	json.NewDecoder(context.Request.Body).Decode(car)
 
-	if err := repository.UpdateCarById(id, car, context.MustGet("db").(*gorm.DB)); err != nil {
+	if err := repository.NewCarRepository(context).UpdateCarById(id, car); err != nil {
 		context.IndentedJSON(http.StatusNotFound, gin.H{"message": err.Error()})
 		return
 	}
@@ -63,7 +63,7 @@ func UpdateCarById(context *gin.Context) {
 func DeleteCarById(context *gin.Context) {
 	id := context.Param("id")
 
-	if err := repository.DeleteCarById(id, context.MustGet("db").(*gorm.DB)); err != nil {
+	if err := repository.NewCarRepository(context).DeleteCarById(id); err != nil {
 		context.IndentedJSON(http.StatusNotFound, gin.H{"message": err.Error()})
 		return
 	}
