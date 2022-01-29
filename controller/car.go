@@ -65,7 +65,7 @@ func DeleteCarById(context *gin.Context) {
 		context.IndentedJSON(http.StatusNotFound, gin.H{"message": err.Error()})
 		return
 	}
-	context.IndentedJSON(http.StatusOK, gin.H{"message": "Car was deleted"})
+	context.IndentedJSON(http.StatusOK, gin.H{"message": "car was deleted"})
 }
 
 // GetNearestCars return nearest cars that are ready to accept the order
@@ -75,10 +75,21 @@ func GetNearestCars(context *gin.Context) {
 	clientY, errY := strconv.Atoi(context.Query("y"))
 	if errX != nil || errY != nil {
 		//TODO: Add middleware with validation
-		context.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Coordinaate error"})
+		context.IndentedJSON(http.StatusBadRequest, gin.H{"message": "coordinates error"})
 		return
 	}
 
 	cars := repository.NewCarRepository(context).GetNearestCars(clientX, clientY)
 	context.IndentedJSON(http.StatusOK, cars)
+}
+
+// ReserveCar set car's flag IsReady to false
+// Users will not be able to find this car by searching nearby cars
+func ReserveCar(context *gin.Context) {
+	id := context.Param("id")
+	if err := repository.NewCarRepository(context).ReserveCarById(id); err != nil {
+		context.IndentedJSON(http.StatusNotFound, gin.H{"message": err.Error()})
+		return
+	}
+	context.IndentedJSON(http.StatusBadRequest, gin.H{"message": "car was reserved"})
 }

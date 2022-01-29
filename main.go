@@ -34,6 +34,7 @@ func main() {
 		v1.PUT("/cars/:id", controller.UpdateCarById)
 		v1.DELETE("/cars/:id", controller.DeleteCarById)
 		v1.GET("/cars/nearest", controller.GetNearestCars)
+		v1.PUT("/cars/:id/reserve", controller.ReserveCar)
 	}
 
 	// Server settings

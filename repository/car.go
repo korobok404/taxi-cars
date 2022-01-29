@@ -136,3 +136,12 @@ func (carRepo *CarRepository) GetNearestCars(x, y int) map[string]*entity.Car {
 
 	return resultCars
 }
+
+func (carRepo *CarRepository) ReserveCarById(id string) error {
+	car, err := carRepo.GetCarById(id)
+	if err != nil {
+		return errors.New(err.Error())
+	}
+	carRepo.db.Model(car).Update("IsReady", false)
+	return nil
+}
