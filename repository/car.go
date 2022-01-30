@@ -55,13 +55,13 @@ func (carRepo *CarRepository) UpdateCarById(id string, car *entity.Car) error {
 	// When update with struct, GORM will only update non-zero fields
 	// https://gorm.io/docs/update.html#Updates-multiple-columns
 	err = carRepo.db.Model(oldCar).Updates(map[string]interface{}{
-		"reg_plate": car.RegPlate,
-		"brand":     car.Brand,
-		"color":     car.Color,
-		"year":      car.Year,
-		"is_ready":  car.IsReady,
-		"pos_x":     car.PosX,
-		"pos_y":     car.PosY,
+		"reg_num":  car.RegNum,
+		"brand":    car.Brand,
+		"color":    car.Color,
+		"year":     car.Year,
+		"is_ready": car.IsReady,
+		"pos_x":    car.PosX,
+		"pos_y":    car.PosY,
 	}).Error
 
 	if err != nil {

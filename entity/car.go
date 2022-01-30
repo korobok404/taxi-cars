@@ -6,7 +6,7 @@ import (
 
 type Car struct {
 	Id        uint   `json:"id" gorm:"primarykey"`
-	RegPlate  string `json:"regPlate" binding:"required"`
+	RegNum    string `json:"regNum" binding:"required"`
 	Brand     string `json:"brand" binding:"required"`
 	Color     string `json:"color" binding:"required"`
 	Year      uint   `json:"year" binding:"required"`

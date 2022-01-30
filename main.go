@@ -81,19 +81,5 @@ func initDB() *gorm.DB {
 
 	// Migrate models
 	db.AutoMigrate(&entity.Car{})
-
-	// Create test car
-	// db.Create(&entity.Car{
-	// 	Id:        "555",
-	// 	RegPlate:  "H321",
-	// 	Brand:     "Toyota",
-	// 	Color:     "Black",
-	// 	Year:      2020,
-	// 	IsReady:   true,
-	// 	PosX:      3,
-	// 	PosY:      5,
-	// 	CreatedAt: time.Now(),
-	// 	UpdatedAt: time.Now(),
-	// })
 	return db
 }
