@@ -5,9 +5,23 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
         integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/fontawesome.min.css" integrity="sha384-jLKHWM3JRmfMU0A5x5AkjWkw/EYfGUAGagvnfryNV3F9VqM98XiIH7VBGVoxVSc7" crossorigin="anonymous">
 </head>
 
 <body>
+     <style>
+     .car-item {
+        display: inline-block;
+        width: 18%;
+        font-size: 1em;
+     }
+     .car-num {
+        color: #fd1e34;
+     }
+    .car-label {
+        color: #b0aeae;
+    }
+    </style>
     <div class="container">
 
         <div style="font-size: 5em;">Car manager</div>
@@ -36,32 +50,32 @@
                     data-bs-target="#add-car">Add car</button>
             </div>
         </div>
+       
+
         <div class="row mt-3">
             <div class="col-12">
-                <table class="table">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Registration number</th>
-                            <th>Brand</th>
-                            <th>Color</th>
-                            <th>Year</th>
-                            <th>Location</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>H123</td>
-                            <td>Toyota</td>
-                            <td>Black</td>
-                            <td>2022</td>
-                            <td>3;5</td>
-                            <td></td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="car-item border border-primary p-3 mt-1">
+                    <div class="d-flex justify-content-between">
+                        <span class="car-num"><strong>H123</strong></span>
+                        <div>
+                            <span class="px-1"><i class="fas fa-pencil-alt"></i></span>
+                            <span class="px-1"><i class="fas fa-trash"></i></span>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div><span class="pe-2 car-label"><i class="fas fa-car"></i></span>Toyota</div>
+                            <div><span class="pe-2 car-label"><i class="fas fa-palette"></i></span>Black</div>
+                            <div><span class="pe-2 car-label"><i class="far fa-calendar"></i></span>2022</div>
+                            <div><span class="pe-2 car-label"><i class="fas fa-map-marker-alt"></i></span>3;5</div>
+                        </div>
+                        <div class="text-center p-3"><i class="fas fa-taxi" style="font-size: 4em; color: #c5c503;"></i></div>
+                    </div>
+                </div>
+
             </div>
         </div>
+
     </div>
 
     <!-- Modal -->
@@ -73,12 +87,12 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form method="POST" action="/" id="form-reg-plate">
+                    <form method="POST" action="/" id="form-reg-num">
 
                         <div class="form-floating">
-                            <input type="text" class="form-control" id="registration-plate"
+                            <input type="text" class="form-control" id="registration-num"
                                 placeholder="Registration number">
-                            <label for="registration-plate">Registration number</label>
+                            <label for="registration-num">Registration number</label>
                         </div>
 
                         <div class="form-floating mt-3">
@@ -103,14 +117,14 @@
 
                             <div class="col-2">
                                 <div class="form-floating mt-3">
-                                    <input type="text" class="form-control" id="X" placeholder="X">
-                                    <label for="X">X</label>
+                                    <input type="text" class="form-control" id="location-x" placeholder="X">
+                                    <label for="location-x">X</label>
                                 </div>
                             </div>
                             <div class="col-2">
                                 <div class="form-floating mt-3">
-                                    <input type="text" class="form-control" id="Y" placeholder="Y">
-                                    <label for="Y">Y</label>
+                                    <input type="text" class="form-control" id="location-y" placeholder="Y">
+                                    <label for="location-y">Y</label>
                                 </div>
                             </div>
                         </div>
@@ -124,8 +138,42 @@
         </div>
     </div>
 </body>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
     crossorigin="anonymous"></script>
+<script>
+    const addCarModal = new bootstrap.Modal(document.getElementById('add-car'));
+
+    const regNum = document.getElementById("registration-num");
+    const brand = document.getElementById("brand");
+    const color = document.getElementById("color");
+    const year = document.getElementById("year");
+    const locationX = document.getElementById("location-x");
+    const locationY = document.getElementById("location-y");
+
+    // Add car
+    document.getElementById("submit-btn").addEventListener("click", function(event){
+        const req = new XMLHttpRequest();
+        req.addEventListener("load", () => {
+            console.log(req.status);
+            if (req.status === 201 || req.status === 200) {
+                addCarModal.hide();
+            }
+        });
+        const data = {
+            "regNum": regNum.value,
+            "brand": brand.value,
+            "color": color.value,
+            "year": parseInt(year.value),
+            "isReady": true,
+            "locX": parseInt(locationX.value),
+            "locY": parseInt(locationY.value),
+        }
+        req.open("POST", "http://localhost:8080/v1/cars");
+        req.send(JSON.stringify(data));
+
+    });
+</script>
 
 </html>

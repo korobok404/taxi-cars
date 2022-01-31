@@ -37,6 +37,14 @@ func main() {
 		v1.PUT("/cars/:id/reserve", controller.ReserveCar)
 	}
 
+	router.GET("/", func(c *gin.Context) {
+		html, err := os.ReadFile("templates/index.html")
+		if err != nil {
+			c.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
+		c.Data(http.StatusOK, "text/html", html)
+	})
 	// Server settings
 	srv := &http.Server{
 		Addr:         ":8080",

@@ -11,8 +11,8 @@ type Car struct {
 	Color     string `json:"color" binding:"required"`
 	Year      uint   `json:"year" binding:"required"`
 	IsReady   bool   `json:"isReady"`
-	PosX      int    `json:"posX" binding:"required"`
-	PosY      int    `json:"posY" binding:"required"`
+	LocX      int    `json:"locX" binding:"required"`
+	LocY      int    `json:"locY" binding:"required"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

@@ -60,8 +60,8 @@ func (carRepo *CarRepository) UpdateCarById(id string, car *entity.Car) error {
 		"color":    car.Color,
 		"year":     car.Year,
 		"is_ready": car.IsReady,
-		"pos_x":    car.PosX,
-		"pos_y":    car.PosY,
+		"loc_x":    car.LocX,
+		"loc_y":    car.LocY,
 	}).Error
 
 	if err != nil {
@@ -115,7 +115,7 @@ func (carRepo *CarRepository) GetNearestCars(x, y int) map[uint]*entity.Car {
 
 		go func(cars []*entity.Car, q chan bool) {
 			for _, car := range cars {
-				if car.IsReady && (car.PosX >= minX && car.PosX <= maxX) && (car.PosY >= minY && car.PosY <= maxY) {
+				if car.IsReady && (car.LocX >= minX && car.LocX <= maxX) && (car.LocY >= minY && car.LocY <= maxY) {
 					mu.Lock()
 					resultCars[car.Id] = car
 					mu.Unlock()
