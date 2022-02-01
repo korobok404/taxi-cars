@@ -6,22 +6,23 @@
         integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/fontawesome.min.css" integrity="sha384-jLKHWM3JRmfMU0A5x5AkjWkw/EYfGUAGagvnfryNV3F9VqM98XiIH7VBGVoxVSc7" crossorigin="anonymous">
-</head>
 
-<body>
-     <style>
-     .car-item {
+    <style>
+    .car-item {
         display: inline-block;
-        width: 18%;
+        width: 21%;
         font-size: 1em;
-     }
-     .car-num {
-        color: #fd1e34;
-     }
+    }
+    .car-num {
+        color: #112690;
+    }
     .car-label {
         color: #b0aeae;
     }
     </style>
+</head>
+
+<body>
     <div class="container">
 
         <div style="font-size: 5em;">Car manager</div>
@@ -53,8 +54,8 @@
        
 
         <div class="row mt-3">
-            <div class="col-12">
-                <div class="car-item border border-primary p-3 mt-1">
+            <div class="col-12" id="list-cars">
+                <div class="car-item border border-primary p-3 mt-1 mx-1 d-none" id="car-template">
                     <div class="d-flex justify-content-between">
                         <span class="car-num"><strong>H123</strong></span>
                         <div>
@@ -64,21 +65,26 @@
                     </div>
                     <div class="d-flex justify-content-between">
                         <div>
-                            <div><span class="pe-2 car-label"><i class="fas fa-car"></i></span>Toyota</div>
-                            <div><span class="pe-2 car-label"><i class="fas fa-palette"></i></span>Black</div>
-                            <div><span class="pe-2 car-label"><i class="far fa-calendar"></i></span>2022</div>
-                            <div><span class="pe-2 car-label"><i class="fas fa-map-marker-alt"></i></span>3;5</div>
+                            <div><i class="fas fa-car pe-2 car-label"></i><span class="car-brand">Toyota</span></div>
+                            <div><i class="fas fa-palette pe-2 car-label"></i><span class="car-color">Black</span></div>
+                            <div><i class="far fa-calendar pe-2 car-label"></i><span class="car-year">2022</span></div>
+                            <div><i class="fas fa-map-marker-alt pe-2 car-label"></i></span><span class="car-location">3;5</span></div>
                         </div>
-                        <div class="text-center p-3"><i class="fas fa-taxi" style="font-size: 4em; color: #c5c503;"></i></div>
+                        <div class="text-center p-3"><i class="fas fa-taxi" style="font-size: 4em; color: #112690;"></i></div>
                     </div>
                 </div>
-
             </div>
         </div>
 
+        <footer class="mt-5">
+            <div class="row">
+                <div class="col-12">
+                    
+                </div>
+            </div>    
+        </footer>
     </div>
-
-    <!-- Modal -->
+    <!-- Add Car Modal -->
     <div class="modal fade" id="add-car" tabindex="-1" aria-labelledby="add-car-label" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -131,7 +137,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-dark" id="submit-btn" />Save</button>
+                    <button type="button" class="btn btn-dark" id="submit-btn">Save</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 </div>
             </div>
@@ -154,10 +160,16 @@
 
     // Add car
     document.getElementById("submit-btn").addEventListener("click", function(event){
-        const req = new XMLHttpRequest();
-        req.addEventListener("load", () => {
-            console.log(req.status);
-            if (req.status === 201 || req.status === 200) {
+        const reqAddCar = new XMLHttpRequest();
+        reqAddCar.addEventListener("load", () => {
+            console.log(reqAddCar.status);            
+            if (reqAddCar.status === 201 || reqAddCar.status === 200) {
+                // Create new car item by template
+                let car = JSON.parse(reqAddCar.responseText);
+                console.log(car);
+                let newCar = createCarItem(car);
+                // Add new car item in list            
+                carList.appendChild(newCar);
                 addCarModal.hide();
             }
         });
@@ -170,9 +182,48 @@
             "locX": parseInt(locationX.value),
             "locY": parseInt(locationY.value),
         }
-        req.open("POST", "http://localhost:8080/v1/cars");
-        req.send(JSON.stringify(data));
+        reqAddCar.open("POST", "http://localhost:8080/v1/cars");
+        reqAddCar.send(JSON.stringify(data));
 
+    });
+
+    const carTpl = document.getElementById("car-template")
+    const carList = document.getElementById("list-cars");
+    // Get all cars
+    function getCars() {
+        const reqGetCars = new XMLHttpRequest();
+        reqGetCars.addEventListener("load", () => {
+            let cars = JSON.parse(reqGetCars.responseText);
+            cars.forEach(car => {    
+                // Create new car item by template
+                let newCar = createCarItem(car);
+                // Add new car item in list            
+                carList.appendChild(newCar);
+            });
+        });
+        reqGetCars.open("GET", "http://localhost:8080/v1/cars");
+        reqGetCars.send();
+    }
+
+    function createCarItem(car) {
+        let carItem = carTpl.cloneNode(true);
+        let carValues = {
+            ".car-num strong": car.regNum, 
+            ".car-brand" : car.brand, 
+            ".car-color": car.color,
+            ".car-year": car.year,
+            ".car-location": car.locX + ';' + car.locY
+        }
+        for (let selector in carValues) {
+            carItem.querySelector(selector).textContent = carValues[selector];
+        }        
+        carItem.removeAttribute("id");
+        carItem.classList.remove("d-none");
+        return carItem;
+    }
+
+    window.addEventListener("load", () => {
+        getCars();
     });
 </script>
 

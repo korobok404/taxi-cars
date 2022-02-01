@@ -13,7 +13,7 @@ curl -X GET 'localhost:8080/v1/cars'
 
 ## Add new car
 ```sh
-curl -X POST 'localhost:8080/v1/cars' -H 'Content-Type: application/json' --data '{"regNum": "A001","brand": "Toyota","color": "Black", "year": 2022, "isReady": false, "posX": 2, "posY": 3}'
+curl -X POST 'localhost:8080/v1/cars' -H 'Content-Type: application/json' --data '{"regNum": "A001","brand": "Toyota","color": "Black", "year": 2022, "isReady": false, "locX": 2, "locY": 3}'
 ```
 
 ## Get car by id
@@ -23,7 +23,7 @@ curl -X GET 'localhost:8080/v1/cars/1'
 
 ## Update car by id
 ```sh
-curl -X PUT 'localhost:8080/v1/cars/1' -H 'Content-Type: application/json' --data '{"regNum": "B002","brand": "Honda","color": "Grey", "year": 2021, "isReady": true, "posX":3, "posY":4}'
+curl -X PUT 'localhost:8080/v1/cars/1' -H 'Content-Type: application/json' --data '{"regNum": "B002","brand": "Honda","color": "Grey", "year": 2021, "isReady": true, "locX":3, "locY":4}'
 ```
 
 ## Find nearest cars by client's coordinates (distance: 5)
