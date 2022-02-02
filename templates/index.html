@@ -8,6 +8,11 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/fontawesome.min.css" integrity="sha384-jLKHWM3JRmfMU0A5x5AkjWkw/EYfGUAGagvnfryNV3F9VqM98XiIH7VBGVoxVSc7" crossorigin="anonymous">
 
     <style>
+    .hidden {
+        visibility: hidden;
+        opacity: 0;
+        transition: visibility 0s 0.3s, opacity 0.3s linear;
+    }
     .car-item {
         display: inline-block;
         width: 21%;
@@ -19,6 +24,17 @@
     .car-label {
         color: #b0aeae;
     }
+    .car-action {
+        border: solid 1px #000000;
+        padding: 3px;
+        border-radius: 3px;
+    }
+    .car-action:hover {
+        cursor: pointer;
+        background-color: #000000;
+        color: #ffffff;
+    }
+
     </style>
 </head>
 
@@ -59,8 +75,8 @@
                     <div class="d-flex justify-content-between">
                         <span class="car-num"><strong>H123</strong></span>
                         <div>
-                            <span class="px-1"><i class="fas fa-pencil-alt"></i></span>
-                            <span class="px-1"><i class="fas fa-trash"></i></span>
+                            <span class="px-1"><i class="fas fa-pencil-alt car-action edit-car" data-car-id="123"></i></span>
+                            <span class="px-1"><i class="fas fa-trash car-action del-car" data-car-id="321"></i></span>
                         </div>
                     </div>
                     <div class="d-flex justify-content-between">
@@ -149,6 +165,9 @@
     integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
     crossorigin="anonymous"></script>
 <script>
+    const apiUrl = "http://localhost:8080/v1/cars";
+    const carTpl = document.getElementById("car-template")
+    const carList = document.getElementById("list-cars");
     const addCarModal = new bootstrap.Modal(document.getElementById('add-car'));
 
     const regNum = document.getElementById("registration-num");
@@ -158,16 +177,15 @@
     const locationX = document.getElementById("location-x");
     const locationY = document.getElementById("location-y");
 
+
     // Add car
     document.getElementById("submit-btn").addEventListener("click", function(event){
         const reqAddCar = new XMLHttpRequest();
-        reqAddCar.addEventListener("load", () => {
-            console.log(reqAddCar.status);            
+        reqAddCar.addEventListener("load", () => { 
             if (reqAddCar.status === 201 || reqAddCar.status === 200) {
                 // Create new car item by template
-                let car = JSON.parse(reqAddCar.responseText);
-                console.log(car);
-                let newCar = createCarItem(car);
+                const car = JSON.parse(reqAddCar.responseText);
+                const newCar = createCarItem(car);
                 // Add new car item in list            
                 carList.appendChild(newCar);
                 addCarModal.hide();
@@ -182,13 +200,30 @@
             "locX": parseInt(locationX.value),
             "locY": parseInt(locationY.value),
         }
-        reqAddCar.open("POST", "http://localhost:8080/v1/cars");
+        reqAddCar.open("POST", apiUrl);
         reqAddCar.send(JSON.stringify(data));
 
     });
 
-    const carTpl = document.getElementById("car-template")
-    const carList = document.getElementById("list-cars");
+    // Edit car
+    function editCar(carId) {
+        console.log("EDITED " + carId);
+    }
+
+    // Delete car
+    function delCar(carId) {
+        let carItem = document.getElementById("car-"+carId);
+        const reqDelCar = new XMLHttpRequest();
+        reqDelCar.addEventListener("load", () => {
+            if (reqDelCar.status === 200) {
+                carItem.classList.add("hidden");
+                setTimeout(() => {carItem.remove()}, 300);
+            }
+        });
+        reqDelCar.open("DELETE", apiUrl + "/" + carId);
+        reqDelCar.send();
+    }
+
     // Get all cars
     function getCars() {
         const reqGetCars = new XMLHttpRequest();
@@ -201,11 +236,12 @@
                 carList.appendChild(newCar);
             });
         });
-        reqGetCars.open("GET", "http://localhost:8080/v1/cars");
+        reqGetCars.open("GET", apiUrl);
         reqGetCars.send();
     }
 
     function createCarItem(car) {
+        // Create new car item
         let carItem = carTpl.cloneNode(true);
         let carValues = {
             ".car-num strong": car.regNum, 
@@ -214,10 +250,27 @@
             ".car-year": car.year,
             ".car-location": car.locX + ';' + car.locY
         }
+        // Set values
         for (let selector in carValues) {
             carItem.querySelector(selector).textContent = carValues[selector];
-        }        
-        carItem.removeAttribute("id");
+        }
+        
+        // Bind events
+        const editBtn = carItem.querySelector(".edit-car");
+        editBtn.dataset.carId = car.id;
+        editBtn.addEventListener("click", (event) => {
+            editCar(event.currentTarget.dataset.carId)
+        });
+
+        const delBtn = carItem.querySelector(".del-car");
+        delBtn.dataset.carId = car.id;
+        delBtn.addEventListener("click", (event) => {
+            delCar(event.currentTarget.dataset.carId)
+        });
+
+        
+        // Delete temp attributes
+        carItem.id = "car-"+car.id;
         carItem.classList.remove("d-none");
         return carItem;
     }
